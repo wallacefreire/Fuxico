@@ -9,7 +9,7 @@ func Hash(senha string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(senha), bcrypt.DefaultCost)
 }
 
-// VerificarSenhar compara uma senha com um hash e retorna se forem iguais
-func VerificarSenhar(senhaComHash, senhaString string) error {
+// VerificarSenha compara uma senha com um hash e retorna se forem iguais
+func VerificarSenha(senhaComHash, senhaString string) error {
 	return bcrypt.CompareHashAndPassword([]byte(senhaComHash), []byte(senhaString))
 }
