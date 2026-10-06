@@ -216,3 +216,79 @@ func DeletarPublicacao(w http.ResponseWriter, r *http.Request) {
 	respostas.JSON(w, http.StatusNoContent, nil)
 
 }
+
+// BuscarPublicacoesPorUsuario busca todas as publicações de um usuário específico no Banco de Dados.
+func BuscarPublicacoesPorUsuario(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioID"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDePublicacoes(db)
+	publicacoes, erro := repositorio.BuscarPorUsuario(usuarioID)
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	respostas.JSON(w, http.StatusOK, publicacoes)
+}
+
+// CurtirPublicacao permite que um usuário curta uma publicação específica no Banco de Dados.
+func CurtirPublicacao(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	publicacaoID, erro := strconv.ParseUint(parametros["publicacaoID"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDePublicacoes(db)
+	if erro := repositorio.Curtir(publicacaoID); erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	respostas.JSON(w, http.StatusNoContent, nil)
+}
+
+// DescurtirPublicacao permite que um usuário descurta uma publicação específica no Banco de Dados.
+func DescurtirPublicacao(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	publicacaoID, erro := strconv.ParseUint(parametros["publicacaoID"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDePublicacoes(db)
+	if erro := repositorio.Descurtir(publicacaoID); erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	respostas.JSON(w, http.StatusNoContent, nil)
+}
